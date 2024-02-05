@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn 
-from config import device 
+from utils.config import device 
 
 class Transformer(nn.Module):
     def __init__(

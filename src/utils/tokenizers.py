@@ -1,4 +1,6 @@
 import re
+import pandas as pd
+import random
 import spacy
 from spacy.tokenizer import Tokenizer
 from spacy.lang.ar import Arabic
@@ -37,3 +39,16 @@ class Textsizing(data.Dataset):
       return len(self.samples)
     def __getitem__(self,idx):
       return self.samples[idx]
+    
+
+
+if __name__ == "__main__":
+    df = pd.read_csv("data/arabic_english.txt",delimiter="\t",names=["eng","ar"])
+    torchdataset = Textsizing(df,SRC,TRG)
+
+    train_data, valid_data = torchdataset.split(split_ratio=0.8, random_state = random.seed(32))
+
+    SRC.build_vocab(train_data,min_freq=2)
+    TRG.build_vocab(train_data,min_freq=2)
+
+    print(train_data[1].__dict__)

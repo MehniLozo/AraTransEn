@@ -27,10 +27,10 @@ TRG = data.Field(tokenize=tk_ar,batch_first=False,tokenizer_language="ar",init_t
 
 class Textsizing(data.Dataset):
   def __init__(self, df, src_field, target_field, is_test=False, **kwargs):
-    fields = [('eng', src_field), ('ar',target_field)]
+    fields = [('en', src_field), ('ar',target_field)]
     samples = []
     for i, r in df.iterrows():
-      en = r.eng
+      en = r.en
       ar = r.ar
       samples.append(data.Example.fromlist([en, ar], fields))
       super().__init__(samples, fields, **kwargs)
@@ -43,7 +43,7 @@ class Textsizing(data.Dataset):
 
 
 if __name__ == "__main__":
-    df = pd.read_csv("data/arabic_english.txt",delimiter="\t",names=["eng","ar"])
+    df = pd.read_csv("data/arabic_english.txt",delimiter="\t",names=["en","ar"])
     torchdataset = Textsizing(df,SRC,TRG)
 
     train_data, valid_data = torchdataset.split(split_ratio=0.8, random_state = random.seed(32))

@@ -12,16 +12,15 @@ class Transformer(nn.Module):
         nheads,
         nencoder_layers, # number of encoder layers
         ndecoder_layers,
-        forward_exp,
         dropout,
-        max_len,
+        len_max,
         device,
     ):
         super(Transformer, self).__init__()
         self.sembeddings = nn.Embedding(svocab_size,emb_size)
-        self.spositional_embeddings= nn.Embedding(max_len,emb_size)
+        self.spositional_embeddings= nn.Embedding(len_max,emb_size)
         self.tembeddings= nn.Embedding(tvocab_size,emb_size)
-        self.tpositional_embeddings= nn.Embedding(max_len,emb_size)
+        self.tpositional_embeddings= nn.Embedding(len_max,emb_size)
         self.device = device
         self.transformer = nn.Transformer(
             emb_size,
@@ -52,13 +51,13 @@ class Transformer(nn.Module):
         )
         # target embedding 
         tembed = self.dropout(
-                ( self.tembeddings(trg) + self.trg_positional_embeddings(tpositions) )
+                ( self.tembeddings(trg) + self.tpositional_embeddings(tpositions) )
         )
         # source masking
         spadding_mask = self.smasking(src)
         # target masking
         tmask = self.transformer.generate_square_subsequent_mask(tseq_len).to(device)
 
-        out = self.transformer(sembed,tembed,src_key_padding = spadding_mask, tgt_mask = tmask )
+        out = self.transformer(sembed,tembed,src_key_paddingsrc_key_padding_mask = spadding_mask, tgt_mask = tmask )
         out = self.fc_out(out)
         return out
